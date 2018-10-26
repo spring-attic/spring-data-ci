@@ -1,0 +1,736 @@
+---
+resource_types:
+- name: artifactory-resource
+  type: docker-image
+  source:
+    repository: springio/artifactory-resource
+    tag:        0.0.4
+
+- name: github-status
+  type: docker-image
+  source:
+    repository: dpb587/github-status-resource
+    tag:        master
+
+- name: pull-request
+  type: docker-image
+  source:
+    repository: jtarchie/pr
+    tag:        latest
+
+- name: slack-notification
+  type: docker-image
+  source:
+    repository: nebhale/slack-notification-resource
+
+resources:
+- name: openjdk:8-jdk
+  type: docker-image
+  source:
+    repository: openjdk
+    tag:        8-jdk
+    
+- name: spring-data-commons-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/spring-data-commons.git
+    branch: concourse
+
+- name: spring-data-commons-status
+  type: github-status
+  source:
+    access_token: ((github-access-token))
+    repository:   gregturn/spring-data-commons
+    branch: concourse
+
+- name: spring-data-commons-pull-requests
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: gregturn/spring-data-commons
+    base: concourse
+    
+- name: spring-data-jpa-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/spring-data-jpa.git
+    branch: concourse
+
+- name: spring-data-jpa-status
+  type: github-status
+  source:
+    access_token: ((github-access-token))
+    repository:   gregturn/spring-data-jpa
+    branch: concourse
+
+- name: spring-data-jpa-pull-requests
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: gregturn/spring-data-jpa
+    base: concourse
+
+- name: spring-data-mongodb-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/spring-data-mongodb.git
+    branch: concourse
+
+- name: spring-data-mongodb-status
+  type: github-status
+  source:
+    access_token: ((github-access-token))
+    repository:   gregturn/spring-data-mongodb
+    branch: concourse
+
+- name: spring-data-mongodb-pull-requests
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: gregturn/spring-data-mongodb
+    base: concourse
+
+- name: spring-data-redis-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/spring-data-redis.git
+    branch: concourse
+
+- name: spring-data-redis-status
+  type: github-status
+  source:
+    access_token: ((github-access-token))
+    repository:   gregturn/spring-data-redis
+    branch: concourse
+
+- name: spring-data-redis-pull-requests
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: gregturn/spring-redis-commons
+    base: concourse
+
+- name: spring-data-rest-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/spring-data-rest.git
+    branch: concourse
+
+- name: spring-data-rest-status
+  type: github-status
+  source:
+    access_token: ((github-access-token))
+    repository:   gregturn/spring-data-rest
+    branch: concourse
+
+- name: spring-data-rest-pull-requests
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: gregturn/spring-data-rest
+    base: concourse
+
+- name: slack
+  type: slack-notification
+  source:
+    url: ((slack))
+
+- name: 8-jdk-with-mongodb-docker-image-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/8-jdk-with-mongodb.git
+    paths:
+    - Dockerfile
+
+- name: 8-jdk-with-mongodb:latest
+  type: docker-image
+  source:
+    repository: gregturn/8-jdk-with-mongodb
+    email:      ((docker-email))
+    username:   ((docker-username))
+    password:   ((docker-password))
+
+- name: 8-jdk-with-redis-docker-image-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/8-jdk-with-redis.git
+    paths:
+    - Dockerfile
+
+- name: 8-jdk-with-redis:latest
+  type: docker-image
+  source:
+    repository: gregturn/8-jdk-with-redis
+    email:      ((docker-email))
+    username:   ((docker-username))
+    password:   ((docker-password))
+
+groups:
+- name: spring-data
+  jobs:
+  - spring-data-commons
+  - spring-data-jpa
+  - spring-data-jpa-downstream-commons
+  - spring-data-mongodb
+  - spring-data-mongodb-downstream-commons
+  - spring-data-redis
+  - spring-data-redis-downstream-commons
+  - spring-data-rest
+  - spring-data-rest-downstream-commons
+  - spring-data-rest-downstream-stores
+- name: pull-requests
+  jobs:
+  - spring-data-commons-pull-requests
+  - spring-data-jpa-pull-requests
+  - spring-data-mongodb-pull-requests
+  - spring-data-redis-pull-requests
+  - spring-data-rest-pull-requests
+- name: docker
+  jobs:
+  - 8-jdk-with-mongodb:latest
+  - 8-jdk-with-redis:latest
+
+jobs:
+- name: spring-data-commons
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-commons-github
+    trigger: true
+  - put: spring-data-commons-status
+    params:
+      commit: spring-data-commons-github
+      state: pending
+  - task: build
+    file: spring-data-commons-github/ci/build.yml
+  on_abort:
+    put: spring-data-commons-status
+    params:
+      commit: spring-data-commons-github
+      state:  error
+  on_failure:
+    aggregate:
+    - put: spring-data-commons-status
+      params:
+        commit: spring-data-commons-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-data-commons-status
+      params:
+        commit: spring-data-commons-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-commons-pull-requests
+  public: true
+  plan:
+  - get: spring-data-commons-github
+    resource: spring-data-commons-pull-requests
+    trigger: true
+    version: every
+  - put: spring-data-commons-pull-requests
+    params:
+      path: spring-data-commons-github
+      status: pending
+  - task: build
+    file: spring-data-commons-github/ci/build.yml
+  on_failure:
+    put: spring-data-commons-pull-requests
+    params:
+      path: spring-data-commons-github
+      status: failure
+  on_success:
+    put: spring-data-commons-pull-requests
+    params:
+      path: spring-data-commons-github
+      status: success
+
+- name: spring-data-jpa
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-jpa-github
+    trigger: true
+  - put: spring-data-jpa-status
+    params:
+      commit: spring-data-jpa-github
+      state: pending
+  - task: build
+    file: spring-data-jpa-github/ci/build.yml
+  on_abort:
+    put: spring-data-jpa-status
+    params:
+      commit: spring-data-jpa-github
+      state:  error
+  on_failure:
+    aggregate:
+    - put: spring-data-jpa-status
+      params:
+        commit: spring-data-jpa-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-data-jpa-status
+      params:
+        commit: spring-data-jpa-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-jpa-pull-requests
+  public: true
+  plan:
+  - get: spring-data-jpa-github
+    resource: spring-data-jpa-pull-requests
+    trigger: true
+    version: every
+  - put: spring-data-jpa-pull-requests
+    params:
+      path: spring-data-jpa-github
+      status: pending
+  - task: build
+    file: spring-data-jpa-github/ci/build.yml
+  on_failure:
+    put: spring-data-jpa-pull-requests
+    params:
+      path: spring-data-jpa-github
+      status: failure
+  on_success:
+    put: spring-data-jpa-pull-requests
+    params:
+      path: spring-data-jpa-github
+      status: success
+
+- name: spring-data-jpa-downstream-commons
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-jpa-github
+    trigger: false
+  - get: spring-data-commons-github
+    trigger: true
+    passed: [spring-data-commons]
+  - task: build
+    file: spring-data-jpa-github/ci/build.yml
+  on_failure:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build driven by Spring Data Commons has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build driven by Spring Data Commons has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-mongodb
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-mongodb-github
+    trigger: true
+  - put: spring-data-mongodb-status
+    params:
+      commit: spring-data-mongodb-github
+      state: pending
+  - task: build
+    file: spring-data-mongodb-github/ci/build.yml
+  on_abort:
+    put: spring-data-mongodb-status
+    params:
+      commit: spring-data-mongodb-github
+      state:  error
+  on_failure:
+    aggregate:
+    - put: spring-data-mongodb-status
+      params:
+        commit: spring-data-mongodb-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-data-mongodb-status
+      params:
+        commit: spring-data-mongodb-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-mongodb-pull-requests
+  public: true
+  plan:
+  - get: spring-data-mongodb-github
+    resource: spring-data-mongodb-pull-requests
+    trigger: true
+    version: every
+  - put: spring-data-mongodb-pull-requests
+    params:
+      path: spring-data-mongodb-github
+      status: pending
+  - task: build
+    file: spring-data-mongodb-github/ci/build.yml
+  on_failure:
+    put: spring-data-mongodb-pull-requests
+    params:
+      path: spring-data-mongodb-github
+      status: failure
+  on_success:
+    put: spring-data-mongodb-pull-requests
+    params:
+      path: spring-data-mongodb-github
+      status: success
+
+- name: spring-data-mongodb-downstream-commons
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-mongodb-github
+    trigger: false
+  - get: spring-data-commons-github
+    trigger: true
+    passed: [spring-data-commons]
+  - task: build
+    file: spring-data-mongodb-github/ci/build.yml
+  on_failure:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build driven by Spring Data Commons has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build driven by Spring Data Commons has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-redis
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-redis-github
+    trigger: true
+  - put: spring-data-redis-status
+    params:
+      commit: spring-data-redis-github
+      state: pending
+  - task: build
+    file: spring-data-redis-github/ci/build.yml
+  on_abort:
+    put: spring-data-redis-status
+    params:
+      commit: spring-data-redis-github
+      state:  error
+  on_failure:
+    aggregate:
+    - put: spring-data-redis-status
+      params:
+        commit: spring-data-redis-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-data-redis-status
+      params:
+        commit: spring-data-redis-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-redis-pull-requests
+  public: true
+  plan:
+  - get: spring-data-redis-github
+    resource: spring-data-redis-pull-requests
+    trigger: true
+    version: every
+  - put: spring-data-redis-pull-requests
+    params:
+      path: spring-data-redis-github
+      status: pending
+  - task: build
+    file: spring-data-redis-github/ci/build.yml
+  on_failure:
+    put: spring-data-redis-pull-requests
+    params:
+      path: spring-data-redis-github
+      status: failure
+  on_success:
+    put: spring-data-redis-pull-requests
+    params:
+      path: spring-data-redis-github
+      status: success
+
+- name: spring-data-redis-downstream-commons
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-redis-github
+    trigger: false
+  - get: spring-data-commons-github
+    trigger: true
+    passed: [spring-data-commons]
+  - task: build
+    file: spring-data-redis-github/ci/build.yml
+  on_failure:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build driven by Spring Data Commons has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build driven by Spring Data Commons has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+
+- name: spring-data-rest
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-rest-github
+    trigger: true
+  - put: spring-data-rest-status
+    params:
+      commit: spring-data-rest-github
+      state: pending
+  - task: build
+    file: spring-data-rest-github/ci/build.yml
+  on_abort:
+    put: spring-data-rest-status
+    params:
+      commit: spring-data-rest-github
+      state:  error
+  on_failure:
+    aggregate:
+    - put: spring-data-rest-status
+      params:
+        commit: spring-data-rest-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-data-rest-status
+      params:
+        commit: spring-data-rest-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-rest-pull-requests
+  public: true
+  plan:
+  - get: spring-data-rest-github
+    resource: spring-data-rest-pull-requests
+    trigger: true
+    version: every
+  - put: spring-data-rest-pull-requests
+    params:
+      path: spring-data-rest-github
+      status: pending
+  - task: build
+    file: spring-data-rest-github/ci/build.yml
+  on_failure:
+    put: spring-data-rest-pull-requests
+    params:
+      path: spring-data-rest-github
+      status: failure
+  on_success:
+    put: spring-data-rest-pull-requests
+    params:
+      path: spring-data-rest-github
+      status: success
+
+- name: spring-data-rest-downstream-commons
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-rest-github
+    trigger: false
+  - get: spring-data-commons-github
+    trigger: true
+    passed: [spring-data-jpa-downstream-commons, spring-data-mongodb-downstream-commons, spring-data-redis-downstream-commons]
+  - task: build
+    file: spring-data-rest-github/ci/build.yml
+  on_failure:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build driven by Spring Data Commons has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build driven by Spring Data Commons has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-rest-downstream-stores
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-rest-github
+    trigger: false
+  - get: spring-data-jpa-github
+    trigger: true
+    passed: [spring-data-jpa]
+  - get: spring-data-mongodb-github
+    trigger: true
+    passed: [spring-data-mongodb]
+  - get: spring-data-redis-github
+    trigger: true
+    passed: [spring-data-redis]
+  - task: build
+    file: spring-data-rest-github/ci/build.yml
+  on_failure:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build driven by a change in a datastore has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build driven by a change in a datastore has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: 8-jdk-with-mongodb:latest
+  public: true
+  plan:
+  - aggregate:
+    - get: 8-jdk-with-mongodb-docker-image-github
+      trigger: true
+    - get: openjdk:8-jdk
+      trigger: true
+  - put: 8-jdk-with-mongodb:latest
+    params:
+      build: 8-jdk-with-mongodb-docker-image-github
+
+- name: 8-jdk-with-redis:latest
+  public: true
+  plan:
+  - aggregate:
+    - get: 8-jdk-with-redis-docker-image-github
+      trigger: true
+    - get: openjdk:8-jdk
+      trigger: true
+  - put: 8-jdk-with-redis:latest
+    params:
+      build: 8-jdk-with-redis-docker-image-github
+
+
+
