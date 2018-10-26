@@ -110,6 +110,46 @@ resources:
     repo: gregturn/spring-redis-commons
     base: concourse
 
+- name: spring-data-geode-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/spring-data-geode.git
+    branch: concourse
+
+- name: spring-data-geode-status
+  type: github-status
+  source:
+    access_token: ((github-access-token))
+    repository:   gregturn/spring-data-geode
+    branch: concourse
+
+- name: spring-data-geode-pull-requests
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: gregturn/spring-data-geode
+    base: concourse
+
+- name: spring-data-jdbc-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/spring-data-jdbc.git
+    branch: concourse
+
+- name: spring-data-jdbc-status
+  type: github-status
+  source:
+    access_token: ((github-access-token))
+    repository:   gregturn/spring-data-jdbc
+    branch: concourse
+
+- name: spring-data-jdbc-pull-requests
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: gregturn/spring-data-jdbc
+    base: concourse
+
 - name: spring-data-rest-github
   type: git
   source:
@@ -175,6 +215,10 @@ groups:
   - spring-data-mongodb-downstream-commons
   - spring-data-redis
   - spring-data-redis-downstream-commons
+  - spring-data-geode
+  - spring-data-geode-downstream-commons
+  - spring-data-jdbc
+  - spring-data-jdbc-downstream-commons
   - spring-data-rest
   - spring-data-rest-downstream-commons
   - spring-data-rest-downstream-stores
@@ -184,6 +228,8 @@ groups:
   - spring-data-jpa-pull-requests
   - spring-data-mongodb-pull-requests
   - spring-data-redis-pull-requests
+  - spring-data-geode-pull-requests
+  - spring-data-jdbc-pull-requests
   - spring-data-rest-pull-requests
 - name: docker
   jobs:
@@ -567,6 +613,209 @@ jobs:
             title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
             title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
+- name: spring-data-geode
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-geode-github
+    trigger: true
+  - put: spring-data-geode-status
+    params:
+      commit: spring-data-geode-github
+      state: pending
+  - task: build
+    file: spring-data-geode-github/ci/build.yml
+  on_abort:
+    put: spring-data-geode-status
+    params:
+      commit: spring-data-geode-github
+      state:  error
+  on_failure:
+    aggregate:
+    - put: spring-data-geode-status
+      params:
+        commit: spring-data-geode-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-data-geode-status
+      params:
+        commit: spring-data-geode-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-geode-pull-requests
+  public: true
+  plan:
+  - get: spring-data-geode-github
+    resource: spring-data-geode-pull-requests
+    trigger: true
+    version: every
+  - put: spring-data-geode-pull-requests
+    params:
+      path: spring-data-geode-github
+      status: pending
+  - task: build
+    file: spring-data-geode-github/ci/build.yml
+  on_failure:
+    put: spring-data-geode-pull-requests
+    params:
+      path: spring-data-geode-github
+      status: failure
+  on_success:
+    put: spring-data-geode-pull-requests
+    params:
+      path: spring-data-geode-github
+      status: success
+
+- name: spring-data-geode-downstream-commons
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-geode-github
+    trigger: false
+  - get: spring-data-commons-github
+    trigger: true
+    passed: [spring-data-commons]
+  - task: build
+    file: spring-data-geode-github/ci/build.yml
+  on_failure:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build driven by Spring Data Commons has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build driven by Spring Data Commons has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-jdbc
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-jdbc-github
+    trigger: true
+  - put: spring-data-jdbc-status
+    params:
+      commit: spring-data-jdbc-github
+      state: pending
+  - task: build
+    file: spring-data-jdbc-github/ci/build.yml
+  on_abort:
+    put: spring-data-jdbc-status
+    params:
+      commit: spring-data-jdbc-github
+      state:  error
+  on_failure:
+    aggregate:
+    - put: spring-data-jdbc-status
+      params:
+        commit: spring-data-jdbc-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-data-jdbc-status
+      params:
+        commit: spring-data-jdbc-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-jdbc-pull-requests
+  public: true
+  plan:
+  - get: spring-data-jdbc-github
+    resource: spring-data-jdbc-pull-requests
+    trigger: true
+    version: every
+  - put: spring-data-jdbc-pull-requests
+    params:
+      path: spring-data-jdbc-github
+      status: pending
+  - task: build
+    file: spring-data-jdbc-github/ci/build.yml
+  on_failure:
+    put: spring-data-jdbc-pull-requests
+    params:
+      path: spring-data-jdbc-github
+      status: failure
+  on_success:
+    put: spring-data-jdbc-pull-requests
+    params:
+      path: spring-data-jdbc-github
+      status: success
+
+- name: spring-data-jdbc-downstream-commons
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-jdbc-github
+    trigger: false
+  - get: spring-data-commons-github
+    trigger: true
+    passed: [spring-data-commons]
+  - task: build
+    file: spring-data-jdbc-github/ci/build.yml
+  on_failure:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build driven by Spring Data Commons has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build driven by Spring Data Commons has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
 - name: spring-data-rest
   serial: true
@@ -646,7 +895,7 @@ jobs:
     trigger: false
   - get: spring-data-commons-github
     trigger: true
-    passed: [spring-data-jpa-downstream-commons, spring-data-mongodb-downstream-commons, spring-data-redis-downstream-commons]
+    passed: [spring-data-jpa-downstream-commons, spring-data-mongodb-downstream-commons, spring-data-redis-downstream-commons, spring-data-geode-downstream-commons, spring-data-jdbc-downstream-commons]
   - task: build
     file: spring-data-rest-github/ci/build.yml
   on_failure:
@@ -685,8 +934,14 @@ jobs:
   - get: spring-data-redis-github
     trigger: true
     passed: [spring-data-redis]
+  - get: spring-data-geode-github
+    trigger: true
+    passed: [spring-data-geode]
+  - get: spring-data-jdbc-github
+    trigger: true
+    passed: [spring-data-jdbc]
   - task: build
-    file: spring-data-rest-github/ci/build.yml
+    file: spring-data-jdbc-github/ci/build.yml
   on_failure:
     aggregate:
     - put: slack
