@@ -170,6 +170,166 @@ resources:
     repo: gregturn/spring-data-rest
     base: concourse
 
+- name: spring-data-solr-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/spring-data-solr.git
+    branch: concourse
+
+- name: spring-data-solr-status
+  type: github-status
+  source:
+    access_token: ((github-access-token))
+    repository:   gregturn/spring-data-solr
+    branch: concourse
+
+- name: spring-data-solr-pull-requests
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: gregturn/spring-data-solr
+    base: concourse
+
+- name: spring-data-keyvalue-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/spring-data-keyvalue.git
+    branch: concourse
+
+- name: spring-data-keyvalue-status
+  type: github-status
+  source:
+    access_token: ((github-access-token))
+    repository:   gregturn/spring-data-keyvalue
+    branch: concourse
+
+- name: spring-data-keyvalue-pull-requests
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: gregturn/spring-data-keyvalue
+    base: concourse
+
+- name: spring-data-cassandra-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/spring-data-cassandra.git
+    branch: concourse
+
+- name: spring-data-cassandra-status
+  type: github-status
+  source:
+    access_token: ((github-access-token))
+    repository:   gregturn/spring-data-cassandra
+    branch: concourse
+
+- name: spring-data-cassandra-pull-requests
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: gregturn/spring-data-cassandra
+    base: concourse
+
+- name: spring-data-neo4j-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/spring-data-neo4j.git
+    branch: concourse
+
+- name: spring-data-neo4j-status
+  type: github-status
+  source:
+    access_token: ((github-access-token))
+    repository:   gregturn/spring-data-neo4j
+    branch: concourse
+
+- name: spring-data-neo4j-pull-requests
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: gregturn/spring-data-neo4j
+    base: concourse
+
+- name: spring-data-ldap-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/spring-data-ldap.git
+    branch: concourse
+
+- name: spring-data-ldap-status
+  type: github-status
+  source:
+    access_token: ((github-access-token))
+    repository:   gregturn/spring-data-ldap
+    branch: concourse
+
+- name: spring-data-ldap-pull-requests
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: gregturn/spring-data-ldap
+    base: concourse
+
+- name: spring-data-envers-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/spring-data-envers.git
+    branch: concourse
+
+- name: spring-data-envers-status
+  type: github-status
+  source:
+    access_token: ((github-access-token))
+    repository:   gregturn/spring-data-envers
+    branch: concourse
+
+- name: spring-data-envers-pull-requests
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: gregturn/spring-data-envers
+    base: concourse
+
+- name: spring-data-elasticsearch-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/spring-data-elasticsearch.git
+    branch: concourse
+
+- name: spring-data-elasticsearch-status
+  type: github-status
+  source:
+    access_token: ((github-access-token))
+    repository:   gregturn/spring-data-elasticsearch
+    branch: concourse
+
+- name: spring-data-elasticsearch-pull-requests
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: gregturn/spring-data-elasticsearch
+    base: concourse
+
+- name: spring-data-couchbase-github
+  type: git
+  source:
+    uri: https://github.com/gregturn/spring-data-couchbase.git
+    branch: concourse
+
+- name: spring-data-couchbase-status
+  type: github-status
+  source:
+    access_token: ((github-access-token))
+    repository:   gregturn/spring-data-couchbase
+    branch: concourse
+
+- name: spring-data-couchbase-pull-requests
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: gregturn/spring-data-couchbase
+    base: concourse
+
 - name: slack
   type: slack-notification
   source:
@@ -219,8 +379,86 @@ groups:
   - spring-data-geode-downstream-commons
   - spring-data-jdbc
   - spring-data-jdbc-downstream-commons
+  - spring-data-solr
+  - spring-data-solr-downstream-commons
+  - spring-data-keyvalue
+  - spring-data-keyvalue-downstream-commons
+  - spring-data-cassandra
+  - spring-data-cassandra-downstream-commons
+  - spring-data-neo4j
+  - spring-data-neo4j-downstream-commons
+  - spring-data-ldap
+  - spring-data-ldap-downstream-commons
+  - spring-data-envers
+  - spring-data-envers-downstream-commons
+  - spring-data-elasticsearch
+  - spring-data-elasticsearch-downstream-commons
+  - spring-data-couchbase
+  - spring-data-couchbase-downstream-commons
   - spring-data-rest
   - spring-data-rest-downstream-commons
+  - spring-data-rest-downstream-stores
+- name: jpa
+  jobs:
+  - spring-data-commons
+  - spring-data-jpa
+  - spring-data-jpa-downstream-commons
+  - spring-data-rest-downstream-stores
+- name: jdbc
+  jobs:
+  - spring-data-commons
+  - spring-data-jdbc
+  - spring-data-jdbc-downstream-commons
+  - spring-data-rest-downstream-stores
+- name: redis
+  jobs:
+  - spring-data-commons
+  - spring-data-redis
+  - spring-data-redis-downstream-commons
+  - spring-data-rest-downstream-stores
+- name: mongodb
+  jobs:
+  - spring-data-commons
+  - spring-data-mongodb
+  - spring-data-mongodb-downstream-commons
+  - spring-data-rest-downstream-stores
+- name: geode
+  jobs:
+  - spring-data-commons
+  - spring-data-geode
+  - spring-data-geode-downstream-commons
+  - spring-data-rest-downstream-stores
+- name: cassandra
+  jobs:
+  - spring-data-commons
+  - spring-data-cassandra
+  - spring-data-cassandra-downstream-commons
+  - spring-data-rest-downstream-stores
+- name: solr
+  jobs:
+  - spring-data-commons
+  - spring-data-solr
+  - spring-data-solr-downstream-commons
+  - spring-data-rest-downstream-stores
+- name: community
+  jobs:
+  - spring-data-commons
+  - spring-data-couchbase
+  - spring-data-couchbase-downstream-commons
+  - spring-data-elasticsearch
+  - spring-data-elasticsearch-downstream-commons
+  - spring-data-neo4j
+  - spring-data-neo4j-downstream-commons
+  - spring-data-rest-downstream-stores
+- name: other
+  jobs:
+  - spring-data-commons
+  - spring-data-ldap
+  - spring-data-ldap-downstream-commons
+  - spring-data-envers
+  - spring-data-envers-downstream-commons
+  - spring-data-keyvalue
+  - spring-data-keyvalue-downstream-commons
   - spring-data-rest-downstream-stores
 - name: pull-requests
   jobs:
@@ -230,6 +468,14 @@ groups:
   - spring-data-redis-pull-requests
   - spring-data-geode-pull-requests
   - spring-data-jdbc-pull-requests
+  - spring-data-solr-pull-requests
+  - spring-data-keyvalue-pull-requests
+  - spring-data-cassandra-pull-requests
+  - spring-data-neo4j-pull-requests
+  - spring-data-ldap-pull-requests
+  - spring-data-envers-pull-requests
+  - spring-data-elasticsearch-pull-requests
+  - spring-data-couchbase-pull-requests
   - spring-data-rest-pull-requests
 - name: docker
   jobs:
@@ -817,6 +1063,822 @@ jobs:
             title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
             title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
+- name: spring-data-solr
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-solr-github
+    trigger: true
+  - put: spring-data-solr-status
+    params:
+      commit: spring-data-solr-github
+      state: pending
+  - task: build
+    file: spring-data-solr-github/ci/build.yml
+  on_abort:
+    put: spring-data-solr-status
+    params:
+      commit: spring-data-solr-github
+      state:  error
+  on_failure:
+    aggregate:
+    - put: spring-data-solr-status
+      params:
+        commit: spring-data-solr-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-data-solr-status
+      params:
+        commit: spring-data-solr-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-solr-pull-requests
+  public: true
+  plan:
+  - get: spring-data-solr-github
+    resource: spring-data-solr-pull-requests
+    trigger: true
+    version: every
+  - put: spring-data-solr-pull-requests
+    params:
+      path: spring-data-solr-github
+      status: pending
+  - task: build
+    file: spring-data-solr-github/ci/build.yml
+  on_failure:
+    put: spring-data-solr-pull-requests
+    params:
+      path: spring-data-solr-github
+      status: failure
+  on_success:
+    put: spring-data-solr-pull-requests
+    params:
+      path: spring-data-solr-github
+      status: success
+
+- name: spring-data-solr-downstream-commons
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-solr-github
+    trigger: false
+  - get: spring-data-commons-github
+    trigger: true
+    passed: [spring-data-commons]
+  - task: build
+    file: spring-data-solr-github/ci/build.yml
+  on_failure:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build driven by Spring Data Commons has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build driven by Spring Data Commons has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-keyvalue
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-keyvalue-github
+    trigger: true
+  - put: spring-data-keyvalue-status
+    params:
+      commit: spring-data-keyvalue-github
+      state: pending
+  - task: build
+    file: spring-data-keyvalue-github/ci/build.yml
+  on_abort:
+    put: spring-data-keyvalue-status
+    params:
+      commit: spring-data-keyvalue-github
+      state:  error
+  on_failure:
+    aggregate:
+    - put: spring-data-keyvalue-status
+      params:
+        commit: spring-data-keyvalue-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-data-keyvalue-status
+      params:
+        commit: spring-data-keyvalue-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-keyvalue-pull-requests
+  public: true
+  plan:
+  - get: spring-data-keyvalue-github
+    resource: spring-data-keyvalue-pull-requests
+    trigger: true
+    version: every
+  - put: spring-data-keyvalue-pull-requests
+    params:
+      path: spring-data-keyvalue-github
+      status: pending
+  - task: build
+    file: spring-data-keyvalue-github/ci/build.yml
+  on_failure:
+    put: spring-data-keyvalue-pull-requests
+    params:
+      path: spring-data-keyvalue-github
+      status: failure
+  on_success:
+    put: spring-data-keyvalue-pull-requests
+    params:
+      path: spring-data-keyvalue-github
+      status: success
+
+- name: spring-data-keyvalue-downstream-commons
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-keyvalue-github
+    trigger: false
+  - get: spring-data-commons-github
+    trigger: true
+    passed: [spring-data-commons]
+  - task: build
+    file: spring-data-keyvalue-github/ci/build.yml
+  on_failure:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build driven by Spring Data Commons has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build driven by Spring Data Commons has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-cassandra
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-cassandra-github
+    trigger: true
+  - put: spring-data-cassandra-status
+    params:
+      commit: spring-data-cassandra-github
+      state: pending
+  - task: build
+    file: spring-data-cassandra-github/ci/build.yml
+  on_abort:
+    put: spring-data-cassandra-status
+    params:
+      commit: spring-data-cassandra-github
+      state:  error
+  on_failure:
+    aggregate:
+    - put: spring-data-cassandra-status
+      params:
+        commit: spring-data-cassandra-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-data-cassandra-status
+      params:
+        commit: spring-data-cassandra-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-cassandra-pull-requests
+  public: true
+  plan:
+  - get: spring-data-cassandra-github
+    resource: spring-data-cassandra-pull-requests
+    trigger: true
+    version: every
+  - put: spring-data-cassandra-pull-requests
+    params:
+      path: spring-data-cassandra-github
+      status: pending
+  - task: build
+    file: spring-data-cassandra-github/ci/build.yml
+  on_failure:
+    put: spring-data-cassandra-pull-requests
+    params:
+      path: spring-data-cassandra-github
+      status: failure
+  on_success:
+    put: spring-data-cassandra-pull-requests
+    params:
+      path: spring-data-cassandra-github
+      status: success
+
+- name: spring-data-cassandra-downstream-commons
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-cassandra-github
+    trigger: false
+  - get: spring-data-commons-github
+    trigger: true
+    passed: [spring-data-commons]
+  - task: build
+    file: spring-data-cassandra-github/ci/build.yml
+  on_failure:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build driven by Spring Data Commons has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build driven by Spring Data Commons has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-neo4j
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-neo4j-github
+    trigger: true
+  - put: spring-data-neo4j-status
+    params:
+      commit: spring-data-neo4j-github
+      state: pending
+  - task: build
+    file: spring-data-neo4j-github/ci/build.yml
+  on_abort:
+    put: spring-data-neo4j-status
+    params:
+      commit: spring-data-neo4j-github
+      state:  error
+  on_failure:
+    aggregate:
+    - put: spring-data-neo4j-status
+      params:
+        commit: spring-data-neo4j-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-data-neo4j-status
+      params:
+        commit: spring-data-neo4j-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-neo4j-pull-requests
+  public: true
+  plan:
+  - get: spring-data-neo4j-github
+    resource: spring-data-neo4j-pull-requests
+    trigger: true
+    version: every
+  - put: spring-data-neo4j-pull-requests
+    params:
+      path: spring-data-neo4j-github
+      status: pending
+  - task: build
+    file: spring-data-neo4j-github/ci/build.yml
+  on_failure:
+    put: spring-data-neo4j-pull-requests
+    params:
+      path: spring-data-neo4j-github
+      status: failure
+  on_success:
+    put: spring-data-neo4j-pull-requests
+    params:
+      path: spring-data-neo4j-github
+      status: success
+
+- name: spring-data-neo4j-downstream-commons
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-neo4j-github
+    trigger: false
+  - get: spring-data-commons-github
+    trigger: true
+    passed: [spring-data-commons]
+  - task: build
+    file: spring-data-neo4j-github/ci/build.yml
+  on_failure:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build driven by Spring Data Commons has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build driven by Spring Data Commons has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-ldap
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-ldap-github
+    trigger: true
+  - put: spring-data-ldap-status
+    params:
+      commit: spring-data-ldap-github
+      state: pending
+  - task: build
+    file: spring-data-ldap-github/ci/build.yml
+  on_abort:
+    put: spring-data-ldap-status
+    params:
+      commit: spring-data-ldap-github
+      state:  error
+  on_failure:
+    aggregate:
+    - put: spring-data-ldap-status
+      params:
+        commit: spring-data-ldap-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-data-ldap-status
+      params:
+        commit: spring-data-ldap-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-ldap-pull-requests
+  public: true
+  plan:
+  - get: spring-data-ldap-github
+    resource: spring-data-ldap-pull-requests
+    trigger: true
+    version: every
+  - put: spring-data-ldap-pull-requests
+    params:
+      path: spring-data-ldap-github
+      status: pending
+  - task: build
+    file: spring-data-ldap-github/ci/build.yml
+  on_failure:
+    put: spring-data-ldap-pull-requests
+    params:
+      path: spring-data-ldap-github
+      status: failure
+  on_success:
+    put: spring-data-ldap-pull-requests
+    params:
+      path: spring-data-ldap-github
+      status: success
+
+- name: spring-data-ldap-downstream-commons
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-ldap-github
+    trigger: false
+  - get: spring-data-commons-github
+    trigger: true
+    passed: [spring-data-commons]
+  - task: build
+    file: spring-data-ldap-github/ci/build.yml
+  on_failure:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build driven by Spring Data Commons has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build driven by Spring Data Commons has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-envers
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-envers-github
+    trigger: true
+  - put: spring-data-envers-status
+    params:
+      commit: spring-data-envers-github
+      state: pending
+  - task: build
+    file: spring-data-envers-github/ci/build.yml
+  on_abort:
+    put: spring-data-envers-status
+    params:
+      commit: spring-data-envers-github
+      state:  error
+  on_failure:
+    aggregate:
+    - put: spring-data-envers-status
+      params:
+        commit: spring-data-envers-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-data-envers-status
+      params:
+        commit: spring-data-envers-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-envers-pull-requests
+  public: true
+  plan:
+  - get: spring-data-envers-github
+    resource: spring-data-envers-pull-requests
+    trigger: true
+    version: every
+  - put: spring-data-envers-pull-requests
+    params:
+      path: spring-data-envers-github
+      status: pending
+  - task: build
+    file: spring-data-envers-github/ci/build.yml
+  on_failure:
+    put: spring-data-envers-pull-requests
+    params:
+      path: spring-data-envers-github
+      status: failure
+  on_success:
+    put: spring-data-envers-pull-requests
+    params:
+      path: spring-data-envers-github
+      status: success
+
+- name: spring-data-envers-downstream-commons
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-envers-github
+    trigger: false
+  - get: spring-data-commons-github
+    trigger: true
+    passed: [spring-data-commons]
+  - task: build
+    file: spring-data-envers-github/ci/build.yml
+  on_failure:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build driven by Spring Data Commons has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build driven by Spring Data Commons has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-elasticsearch
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-elasticsearch-github
+    trigger: true
+  - put: spring-data-elasticsearch-status
+    params:
+      commit: spring-data-elasticsearch-github
+      state: pending
+  - task: build
+    file: spring-data-elasticsearch-github/ci/build.yml
+  on_abort:
+    put: spring-data-elasticsearch-status
+    params:
+      commit: spring-data-elasticsearch-github
+      state:  error
+  on_failure:
+    aggregate:
+    - put: spring-data-elasticsearch-status
+      params:
+        commit: spring-data-elasticsearch-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-data-elasticsearch-status
+      params:
+        commit: spring-data-elasticsearch-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-elasticsearch-pull-requests
+  public: true
+  plan:
+  - get: spring-data-elasticsearch-github
+    resource: spring-data-elasticsearch-pull-requests
+    trigger: true
+    version: every
+  - put: spring-data-elasticsearch-pull-requests
+    params:
+      path: spring-data-elasticsearch-github
+      status: pending
+  - task: build
+    file: spring-data-elasticsearch-github/ci/build.yml
+  on_failure:
+    put: spring-data-elasticsearch-pull-requests
+    params:
+      path: spring-data-elasticsearch-github
+      status: failure
+  on_success:
+    put: spring-data-elasticsearch-pull-requests
+    params:
+      path: spring-data-elasticsearch-github
+      status: success
+
+- name: spring-data-elasticsearch-downstream-commons
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-elasticsearch-github
+    trigger: false
+  - get: spring-data-commons-github
+    trigger: true
+    passed: [spring-data-commons]
+  - task: build
+    file: spring-data-elasticsearch-github/ci/build.yml
+  on_failure:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build driven by Spring Data Commons has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build driven by Spring Data Commons has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-couchbase
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-couchbase-github
+    trigger: true
+  - put: spring-data-couchbase-status
+    params:
+      commit: spring-data-couchbase-github
+      state: pending
+  - task: build
+    file: spring-data-couchbase-github/ci/build.yml
+  on_abort:
+    put: spring-data-couchbase-status
+    params:
+      commit: spring-data-couchbase-github
+      state:  error
+  on_failure:
+    aggregate:
+    - put: spring-data-couchbase-status
+      params:
+        commit: spring-data-couchbase-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-data-couchbase-status
+      params:
+        commit: spring-data-couchbase-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-data-couchbase-pull-requests
+  public: true
+  plan:
+  - get: spring-data-couchbase-github
+    resource: spring-data-couchbase-pull-requests
+    trigger: true
+    version: every
+  - put: spring-data-couchbase-pull-requests
+    params:
+      path: spring-data-couchbase-github
+      status: pending
+  - task: build
+    file: spring-data-couchbase-github/ci/build.yml
+  on_failure:
+    put: spring-data-couchbase-pull-requests
+    params:
+      path: spring-data-couchbase-github
+      status: failure
+  on_success:
+    put: spring-data-couchbase-pull-requests
+    params:
+      path: spring-data-couchbase-github
+      status: success
+
+- name: spring-data-couchbase-downstream-commons
+  serial: true
+  public: true
+  plan:
+  - get: spring-data-couchbase-github
+    trigger: false
+  - get: spring-data-commons-github
+    trigger: true
+    passed: [spring-data-commons]
+  - task: build
+    file: spring-data-couchbase-github/ci/build.yml
+  on_failure:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build driven by Spring Data Commons has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build driven by Spring Data Commons has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
 - name: spring-data-rest
   serial: true
   public: true
@@ -895,7 +1957,21 @@ jobs:
     trigger: false
   - get: spring-data-commons-github
     trigger: true
-    passed: [spring-data-jpa-downstream-commons, spring-data-mongodb-downstream-commons, spring-data-redis-downstream-commons, spring-data-geode-downstream-commons, spring-data-jdbc-downstream-commons]
+    passed: [
+      spring-data-jpa-downstream-commons, 
+      spring-data-mongodb-downstream-commons, 
+      spring-data-redis-downstream-commons, 
+      spring-data-geode-downstream-commons, 
+      spring-data-jdbc-downstream-commons,
+      spring-data-solr-downstream-commons,
+      spring-data-keyvalue-downstream-commons,
+      spring-data-cassandra-downstream-commons,
+      spring-data-neo4j-downstream-commons,
+      spring-data-ldap-downstream-commons,
+      spring-data-envers-downstream-commons,
+      spring-data-elasticsearch-downstream-commons,
+      spring-data-couchbase-downstream-commons    
+    ]
   - task: build
     file: spring-data-rest-github/ci/build.yml
   on_failure:
@@ -940,6 +2016,30 @@ jobs:
   - get: spring-data-jdbc-github
     trigger: true
     passed: [spring-data-jdbc]
+  - get: spring-data-solr-github
+    trigger: true
+    passed: [spring-data-solr]
+  - get: spring-data-keyvalue-github
+    trigger: true
+    passed: [spring-data-keyvalue]
+  - get: spring-data-cassandra-github
+    trigger: true
+    passed: [spring-data-cassandra]
+  - get: spring-data-neo4j-github
+    trigger: true
+    passed: [spring-data-neo4j]
+  - get: spring-data-ldap-github
+    trigger: true
+    passed: [spring-data-ldap]
+  - get: spring-data-envers-github
+    trigger: true
+    passed: [spring-data-envers]
+  - get: spring-data-elasticsearch-github
+    trigger: true
+    passed: [spring-data-elasticsearch]
+  - get: spring-data-couchbase-github
+    trigger: true
+    passed: [spring-data-couchbase]
   - task: build
     file: spring-data-jdbc-github/ci/build.yml
   on_failure:
