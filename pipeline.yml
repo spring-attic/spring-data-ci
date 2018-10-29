@@ -75,6 +75,8 @@ resources:
   source:
     uri: https://github.com/gregturn/spring-data-mongodb.git
     branch: concourse
+    ignore_paths:
+    - ci/Dockerfile
 
 - name: spring-data-mongodb-status
   type: github-status
@@ -95,6 +97,8 @@ resources:
   source:
     uri: https://github.com/gregturn/spring-data-redis.git
     branch: concourse
+    ignore_paths:
+    - ci/Dockerfile
 
 - name: spring-data-redis-status
   type: github-status
@@ -338,9 +342,10 @@ resources:
 - name: 8-jdk-with-mongodb-docker-image-github
   type: git
   source:
-    uri: https://github.com/gregturn/8-jdk-with-mongodb.git
+    uri: https://github.com/gregturn/spring-data-mongodb.git
+    branch: concourse
     paths:
-    - Dockerfile
+    - ci/Dockerfile
 
 - name: 8-jdk-with-mongodb:latest
   type: docker-image
@@ -353,9 +358,10 @@ resources:
 - name: 8-jdk-with-redis-docker-image-github
   type: git
   source:
-    uri: https://github.com/gregturn/8-jdk-with-redis.git
+    uri: https://github.com/gregturn/spring-data-redis.git
+    branch: concourse
     paths:
-    - Dockerfile
+    - ci/Dockerfile
 
 - name: 8-jdk-with-redis:latest
   type: docker-image
