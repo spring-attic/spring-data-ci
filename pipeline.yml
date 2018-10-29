@@ -2079,7 +2079,7 @@ jobs:
       trigger: true
   - put: 8-jdk-with-mongodb:latest
     params:
-      build: 8-jdk-with-mongodb-docker-image-github
+      build: 8-jdk-with-mongodb-docker-image-github/ci
 
 - name: 8-jdk-with-redis:latest
   public: true
@@ -2091,7 +2091,7 @@ jobs:
       trigger: true
   - put: 8-jdk-with-redis:latest
     params:
-      build: 8-jdk-with-redis-docker-image-github
+      build: 8-jdk-with-redis-docker-image-github/ci
 
 
 
