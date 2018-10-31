@@ -346,6 +346,7 @@ resources:
     branch: concourse
     paths:
     - ci/Dockerfile
+    - Makefile
 
 - name: 8-jdk-with-mongodb:latest
   type: docker-image
@@ -410,42 +411,50 @@ groups:
   - spring-data-jpa
   - spring-data-jpa-downstream-commons
   - spring-data-rest-downstream-stores
+  - spring-data-rest-downstream-commons
 - name: jdbc
   jobs:
   - spring-data-commons
   - spring-data-jdbc
   - spring-data-jdbc-downstream-commons
   - spring-data-rest-downstream-stores
+  - spring-data-rest-downstream-commons
 - name: redis
   jobs:
   - spring-data-commons
   - spring-data-redis
   - spring-data-redis-downstream-commons
   - spring-data-rest-downstream-stores
+  - 8-jdk-with-redis:latest
 - name: mongodb
   jobs:
   - spring-data-commons
   - spring-data-mongodb
   - spring-data-mongodb-downstream-commons
   - spring-data-rest-downstream-stores
+  - 8-jdk-with-mongodb:latest
+  - spring-data-rest-downstream-commons
 - name: geode
   jobs:
   - spring-data-commons
   - spring-data-geode
   - spring-data-geode-downstream-commons
   - spring-data-rest-downstream-stores
+  - spring-data-rest-downstream-commons
 - name: cassandra
   jobs:
   - spring-data-commons
   - spring-data-cassandra
   - spring-data-cassandra-downstream-commons
   - spring-data-rest-downstream-stores
+  - spring-data-rest-downstream-commons
 - name: solr
   jobs:
   - spring-data-commons
   - spring-data-solr
   - spring-data-solr-downstream-commons
   - spring-data-rest-downstream-stores
+  - spring-data-rest-downstream-commons
 - name: community
   jobs:
   - spring-data-commons
@@ -456,6 +465,7 @@ groups:
   - spring-data-neo4j
   - spring-data-neo4j-downstream-commons
   - spring-data-rest-downstream-stores
+  - spring-data-rest-downstream-commons
 - name: other
   jobs:
   - spring-data-commons
@@ -466,6 +476,7 @@ groups:
   - spring-data-keyvalue
   - spring-data-keyvalue-downstream-commons
   - spring-data-rest-downstream-stores
+  - spring-data-rest-downstream-commons
 - name: pull-requests
   jobs:
   - spring-data-commons-pull-requests
@@ -667,6 +678,8 @@ jobs:
   plan:
   - get: spring-data-mongodb-github
     trigger: true
+  - get: 8-jdk-with-mongodb:latest
+    trigger: true
   - put: spring-data-mongodb-status
     params:
       commit: spring-data-mongodb-github
@@ -768,6 +781,8 @@ jobs:
   public: true
   plan:
   - get: spring-data-redis-github
+    trigger: true
+  - get: 8-jdk-with-redis:latest
     trigger: true
   - put: spring-data-redis-status
     params:
@@ -2091,7 +2106,8 @@ jobs:
       trigger: true
   - put: 8-jdk-with-redis:latest
     params:
-      build: 8-jdk-with-redis-docker-image-github/ci
+      build: 8-jdk-with-redis-docker-image-github
+      dockerfile: 8-jdk-with-redis-docker-image-github/ci/Dockerfile
 
 
 
