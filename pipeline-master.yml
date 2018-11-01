@@ -29,6 +29,18 @@ resources:
   source:
     repository: openjdk
     tag:        8-jdk
+
+- name: openjdk:10-jdk
+  type: docker-image
+  source:
+    repository: openjdk
+    tag:        10-jdk
+
+- name: openjdk:11-jdk
+  type: docker-image
+  source:
+    repository: openjdk
+    tag:        11-jdk
     
 - name: spring-data-commons-github
   type: git
@@ -581,36 +593,38 @@ jobs:
       commit: spring-data-jpa-github
       state: pending
   - aggregate:
-    - task: build (ci)
-      file: spring-data-jpa-github/ci/build.yml
+    - task: test (ci)
+      file: spring-data-jpa-github/ci/test.yml
       params: { PROFILE: ci }
-    - task: build (spring5-next)
-      file: spring-data-jpa-github/ci/build.yml
+    - task: test (spring5-next)
+      file: spring-data-jpa-github/ci/test.yml
       params: { PROFILE: spring5-next }
-    - task: build (hibernate-next)
-      file: spring-data-jpa-github/ci/build.yml
+    - task: test (hibernate-next)
+      file: spring-data-jpa-github/ci/test.yml
       params: { PROFILE: hibernate-next }
-    - task: build (hibernate-53)
-      file: spring-data-jpa-github/ci/build.yml
+    - task: test (hibernate-53)
+      file: spring-data-jpa-github/ci/test.yml
       params: { PROFILE: hibernate-53 }
-    - task: build (hibernate-53-next)
-      file: spring-data-jpa-github/ci/build.yml
+    - task: test (hibernate-53-next)
+      file: spring-data-jpa-github/ci/test.yml
       params: { PROFILE: hibernate-53-next }
-    - task: build (hibernate-54-next)
-      file: spring-data-jpa-github/ci/build.yml
+    - task: test (hibernate-54-next)
+      file: spring-data-jpa-github/ci/test.yml
       params: { PROFILE: hibernate-54-next }
-    - task: build (eclipselink-next)
-      file: spring-data-jpa-github/ci/build.yml
+    - task: test (eclipselink-next)
+      file: spring-data-jpa-github/ci/test.yml
       params: { PROFILE: eclipselink-next }
-    - task: build (eclipselink-27)
-      file: spring-data-jpa-github/ci/build.yml
+    - task: test (eclipselink-27)
+      file: spring-data-jpa-github/ci/test.yml
       params: { PROFILE: eclipselink-27 }
-    - task: build (eclipselink-27-next)
-      file: spring-data-jpa-github/ci/build.yml
+    - task: test (eclipselink-27-next)
+      file: spring-data-jpa-github/ci/test.yml
       params: { PROFILE: eclipselink-27-next }
-    - task: build (querydsl-next)
-      file: spring-data-jpa-github/ci/build.yml
+    - task: test (querydsl-next)
+      file: spring-data-jpa-github/ci/test.yml
       params: { PROFILE: querydsl-next }
+  - task: deploy
+    file: spring-data-jpa-github/ci/deploy.yml
   on_abort:
     put: spring-data-jpa-status
     params:
@@ -678,8 +692,37 @@ jobs:
   - get: spring-data-commons-github
     trigger: true
     passed: [spring-data-commons]
-  - task: build
-    file: spring-data-jpa-github/ci/build.yml
+  - aggregate:
+    - task: test (ci)
+      file: spring-data-jpa-github/ci/test.yml
+      params: { PROFILE: ci }
+    - task: test (spring5-next)
+      file: spring-data-jpa-github/ci/test.yml
+      params: { PROFILE: spring5-next }
+    - task: test (hibernate-next)
+      file: spring-data-jpa-github/ci/test.yml
+      params: { PROFILE: hibernate-next }
+    - task: test (hibernate-53)
+      file: spring-data-jpa-github/ci/test.yml
+      params: { PROFILE: hibernate-53 }
+    - task: test (hibernate-53-next)
+      file: spring-data-jpa-github/ci/test.yml
+      params: { PROFILE: hibernate-53-next }
+    - task: test (hibernate-54-next)
+      file: spring-data-jpa-github/ci/test.yml
+      params: { PROFILE: hibernate-54-next }
+    - task: test (eclipselink-next)
+      file: spring-data-jpa-github/ci/test.yml
+      params: { PROFILE: eclipselink-next }
+    - task: test (eclipselink-27)
+      file: spring-data-jpa-github/ci/test.yml
+      params: { PROFILE: eclipselink-27 }
+    - task: test (eclipselink-27-next)
+      file: spring-data-jpa-github/ci/test.yml
+      params: { PROFILE: eclipselink-27-next }
+    - task: test (querydsl-next)
+      file: spring-data-jpa-github/ci/test.yml
+      params: { PROFILE: querydsl-next }
   on_failure:
     aggregate:
     - put: slack
@@ -1017,12 +1060,25 @@ jobs:
   plan:
   - get: spring-data-jdbc-github
     trigger: true
+  - get: openjdk:10-jdk
+  - get: openjdk:11-jdk
   - put: spring-data-jdbc-status
     params:
       commit: spring-data-jdbc-github
       state: pending
-  - task: build
-    file: spring-data-jdbc-github/ci/build.yml
+  - aggregate:
+    - task: test (JDK 8)
+      file: spring-data-jdbc-github/ci/test.yml
+    - task: test (JDK 10 no Jacoco)
+      image: openjdk:10-jdk
+      file: spring-data-jdbc-github/ci/test.yml
+      params: { NO_JACOCO: 'true' }
+    - task: test (JDK 11 no Jacoco)
+      image: openjdk:11-jdk
+      file: spring-data-jdbc-github/ci/test.yml
+      params: { NO_JACOCO: 'true' }
+  - task: deploy
+    file: spring-data-jdbc-github/ci/deploy.yml
   on_abort:
     put: spring-data-jdbc-status
     params:
@@ -1090,8 +1146,19 @@ jobs:
   - get: spring-data-commons-github
     trigger: true
     passed: [spring-data-commons]
-  - task: build
-    file: spring-data-jdbc-github/ci/build.yml
+  - get: openjdk:10-jdk
+  - get: openjdk:11-jdk
+  - aggregate:
+    - task: test (JDK 8)
+      file: spring-data-jdbc-github/ci/test.yml
+    - task: test (JDK 10 no Jacoco)
+      image: openjdk:10-jdk
+      file: spring-data-jdbc-github/ci/test.yml
+      params: { NO_JACOCO: 'true' }
+    - task: test (JDK 11 no Jacoco)
+      image: openjdk:11-jdk
+      file: spring-data-jdbc-github/ci/test.yml
+      params: { NO_JACOCO: 'true' }
   on_failure:
     aggregate:
     - put: slack
