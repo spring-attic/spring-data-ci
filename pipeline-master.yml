@@ -580,8 +580,37 @@ jobs:
     params:
       commit: spring-data-jpa-github
       state: pending
-  - task: build
-    file: spring-data-jpa-github/ci/build.yml
+  - aggregate:
+    - task: build (ci)
+      file: spring-data-jpa-github/ci/build.yml
+      params: { PROFILE: ci }
+    - task: build (spring5-next)
+      file: spring-data-jpa-github/ci/build.yml
+      params: { PROFILE: spring5-next }
+    - task: build (hibernate-next)
+      file: spring-data-jpa-github/ci/build.yml
+      params: { PROFILE: hibernate-next }
+    - task: build (hibernate-53)
+      file: spring-data-jpa-github/ci/build.yml
+      params: { PROFILE: hibernate-53 }
+    - task: build (hibernate-53-next)
+      file: spring-data-jpa-github/ci/build.yml
+      params: { PROFILE: hibernate-53-next }
+    - task: build (hibernate-54-next)
+      file: spring-data-jpa-github/ci/build.yml
+      params: { PROFILE: hibernate-54-next }
+    - task: build (eclipselink-next)
+      file: spring-data-jpa-github/ci/build.yml
+      params: { PROFILE: eclipselink-next }
+    - task: build (eclipselink-27)
+      file: spring-data-jpa-github/ci/build.yml
+      params: { PROFILE: eclipselink-27 }
+    - task: build (eclipselink-27-next)
+      file: spring-data-jpa-github/ci/build.yml
+      params: { PROFILE: eclipselink-27-next }
+    - task: build (querydsl-next)
+      file: spring-data-jpa-github/ci/build.yml
+      params: { PROFILE: querydsl-next }
   on_abort:
     put: spring-data-jpa-status
     params:
