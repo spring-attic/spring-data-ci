@@ -30,12 +30,6 @@ resources:
     repository: openjdk
     tag:        8-jdk
 
-- name: openjdk:10-jdk
-  type: docker-image
-  source:
-    repository: openjdk
-    tag:        10-jdk
-
 - name: openjdk:11-jdk
   type: docker-image
   source:
@@ -1060,7 +1054,6 @@ jobs:
   plan:
   - get: spring-data-jdbc-github
     trigger: true
-  - get: openjdk:10-jdk
   - get: openjdk:11-jdk
   - put: spring-data-jdbc-status
     params:
@@ -1069,14 +1062,11 @@ jobs:
   - aggregate:
     - task: test (JDK 8)
       file: spring-data-jdbc-github/ci/test.yml
-    - task: test (JDK 10 no Jacoco)
-      image: openjdk:10-jdk
-      file: spring-data-jdbc-github/ci/test.yml
-      params: { NO_JACOCO: 'true' }
-    - task: test (JDK 11 no Jacoco)
+      params: { PROFILE: ci }
+    - task: test (JDK 11)
       image: openjdk:11-jdk
       file: spring-data-jdbc-github/ci/test.yml
-      params: { NO_JACOCO: 'true' }
+      params: { PROFILE: no-jacoco }
   - task: deploy
     file: spring-data-jdbc-github/ci/deploy.yml
   on_abort:
@@ -1146,19 +1136,15 @@ jobs:
   - get: spring-data-commons-github
     trigger: true
     passed: [spring-data-commons]
-  - get: openjdk:10-jdk
   - get: openjdk:11-jdk
   - aggregate:
     - task: test (JDK 8)
       file: spring-data-jdbc-github/ci/test.yml
-    - task: test (JDK 10 no Jacoco)
-      image: openjdk:10-jdk
-      file: spring-data-jdbc-github/ci/test.yml
-      params: { NO_JACOCO: 'true' }
-    - task: test (JDK 11 no Jacoco)
+      params: { PROFILE: ci }
+    - task: test (JDK 11)
       image: openjdk:11-jdk
       file: spring-data-jdbc-github/ci/test.yml
-      params: { NO_JACOCO: 'true' }
+      params: { PROFILE: no-jacoco }
   on_failure:
     aggregate:
     - put: slack
